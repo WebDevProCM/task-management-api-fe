@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { setToken } from '@/lib/auth'
 import { registerUser } from '@/services/user'
 
 export default function RegisterPage() {

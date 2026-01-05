@@ -19,5 +19,5 @@ export function removeToken(): void {
 
 export function isAuthenticated(): boolean {
   const token = getToken()
-  return !!token
+  return token ? true : false
 }
