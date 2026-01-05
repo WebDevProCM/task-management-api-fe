@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { Task } from '@/types/task'
-import { getToken } from '@/lib/auth'
 import TaskForm from '@/components/task-form'
 import { deleteTask, fetchTask, updateTask } from '@/services/task'
 
@@ -14,25 +13,17 @@ export default function TaskDetailPage() {
   const [loading, setLoading] = useState(true)
   const [editing, setEditing] = useState(false)
   const [error, setError] = useState('')
-
-  const token = getToken()
   const taskId = params.id as string
 
-  //redirect user to login page if token not found
   useEffect(() => {
-    if (!token) {
-      router.push('/login')
-      return
-    }
-
     loadTask()
-  }, [taskId, token])
+  }, [taskId])
 
   //fetching all task
   const loadTask = async () => {
     try {
       setLoading(true)
-      const data = await fetchTask(token!, taskId)
+      const data = await fetchTask(taskId)
 
       if(!data.success){
         return setError(data.message)
@@ -49,10 +40,9 @@ export default function TaskDetailPage() {
 
   //handling task update
   const handleUpdateTask = async (updates: Omit<Task, '_id' | 'createdAt' | 'updatedAt'>) => {
-    if (!token) return
-    
+  
     try {
-      const updatedTask = await updateTask(token, updates, taskId);
+      const updatedTask = await updateTask(taskId, updates);
 
       if(!updatedTask.success){
         return setError(updatedTask.message)
@@ -66,13 +56,11 @@ export default function TaskDetailPage() {
     }
   }
 
-  const handleDeleteTask = async () => {
-    if (!token) return
-    
+  const handleDeleteTask = async () => {  
     if (!confirm('Are you sure you want to delete this task?')) return
     
     try {
-      await deleteTask(token,taskId);
+      await deleteTask(taskId);
       router.push('/')
     } catch (err) {
       console.log("error: ", err)

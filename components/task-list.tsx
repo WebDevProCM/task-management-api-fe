@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { Task } from '@/types/task'
-import { getToken } from '@/lib/auth'
 import TaskCard from './task-card'
 import TaskForm from './task-form'
 import { createTask, deleteTask, fetchTasks } from '@/services/task'
@@ -17,16 +16,11 @@ export default function TaskList({ initialTasks = [] }: TaskListProps) {
   const [showForm, setShowForm] = useState(false)
   const [page, setPage] = useState(1)
 
-  //getting token
-  const token = getToken()
-
   //loading tasks fn
   const loadTasks = async () => {
-    if (!token) return
-    
     try {
       setLoading(true);
-      const data = await fetchTasks(token, page, 10);
+      const data = await fetchTasks( page, 10);
       console.log("data", data)
       if(data.data?.tasks){
         setTasks(data.data?.tasks)
@@ -44,13 +38,11 @@ export default function TaskList({ initialTasks = [] }: TaskListProps) {
   }, [page])
 
   const handleCreateTask = async (taskData: Omit<Task, '_id' | 'createdAt' | 'updatedAt'>) => {
-    if (!token) return
-    
     try {
-      const newTask = await createTask(token, taskData)
+      const newTask = await createTask(taskData)
 
       if(newTask?.success){
-        setTasks([newTask?.data, ...tasks])
+        loadTasks();
       }
       setShowForm(false)
     } catch (error) {
@@ -59,13 +51,11 @@ export default function TaskList({ initialTasks = [] }: TaskListProps) {
   }
 
   const handleDeleteTask = async (id: string) => {
-    if (!token) return
-    
     if (!confirm('Are you sure you want to delete this task?')) return
     
     try {
-      await deleteTask(token, id)
-      setTasks(tasks.filter(task => task._id !== id))
+      await deleteTask(id)
+      loadTasks();
     } catch (error) {
       console.error('Failed to delete task:', error)
     }

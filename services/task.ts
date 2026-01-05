@@ -1,55 +1,49 @@
+import { getToken } from "@/lib/auth";
 import { Task } from "@/types/task";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
-export const fetchTasks = async (token:string, page:number, limit:number) => {
-  const res = await fetch(`${API_URL}/api/tasks?page=${page}&limit=${limit}`, { 
-    cache: "no-store",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  return res.json();
-};
-export const fetchTask = async (token:string,id:string) => {
-  const res = await fetch(`${API_URL}/api/tasks/${id}`, { 
-    cache: "no-store", 
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  return res.json();
-};
+// Centralized fetch wrapper
+async function apiFetch(url: string, options: RequestInit = {}) {
+  const token = getToken();
 
-export const createTask = async (token:string,data: Task) => {
-  const res = await fetch(`${API_URL}/api/tasks`, {
-    method: "POST",
-    headers: { 
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`
-    },
-    body: JSON.stringify(data),
-  });
-  return res.json();
-};
-export const updateTask = async (token:string, data: Task, id:string) => {
-  const res = await fetch(`${API_URL}/api/tasks/${id}`, {
-    method: "PUT",
-    headers: { 
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`
-    },
-    body: JSON.stringify(data),
-  });
-  return res.json();
-};
-export const deleteTask = async (token:string, id:string) => {
-  const res = await fetch(`${API_URL}/api/tasks/${id}`, {
-    method: "DELETE",
-    headers: { 
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`
+  const headers = {
+    "Content-Type": "application/json",
+    ...(options.headers || {}),
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+
+  const res = await fetch(`${API_URL}${url}`, { ...options, headers });
+
+  if (res.status === 401) {
+    // token expired or unauthorized
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("accessToken"); // clear token
+      window.location.href = "/login"; // redirect
     }
-  });
+    throw new Error("Session expired");
+  }
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => null);
+    throw new Error(errorData?.message || "Request failed");
+  }
+
   return res.json();
-};
+}
+
+// task API functions
+export const fetchTasks = (page: number, limit: number) =>
+  apiFetch(`/api/tasks?page=${page}&limit=${limit}`, { cache: "no-store" });
+
+export const fetchTask = (id: string) =>
+  apiFetch(`/api/tasks/${id}`, { cache: "no-store" });
+
+export const createTask = (data: Task) =>
+  apiFetch(`/api/tasks`, { method: "POST", body: JSON.stringify(data) });
+
+export const updateTask = (id: string, data: Task) =>
+  apiFetch(`/api/tasks/${id}`, { method: "PUT", body: JSON.stringify(data) });
+
+export const deleteTask = (id: string) =>
+  apiFetch(`/api/tasks/${id}`, { method: "DELETE" });
