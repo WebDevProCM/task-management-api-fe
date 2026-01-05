@@ -7,6 +7,7 @@ import { useEffect } from 'react'
 
 export default function HomePage() {
   
+  //protecting routes
   useEffect(() =>{
     const authenticated = isAuthenticated()
     console.log("authenticated", authenticated)

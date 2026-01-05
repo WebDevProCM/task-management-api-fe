@@ -1,3 +1,4 @@
+//handling auth token on localstorage
 export function setToken(token: string): void {
   if (typeof window !== 'undefined') {
     localStorage.setItem('token', token)

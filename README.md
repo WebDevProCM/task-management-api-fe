@@ -1,36 +1,90 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Task Management API (Backend)
 
-## Getting Started
+Repo_url - `https://github.com/WebDevProCM/task-management-api-be`
 
-First, run the development server:
+Backend REST API for the Task Management application built with **Node.js, Express, TypeScript, MongoDB**, and **JWT authentication**.  
+This backend is designed to work with a separate Next.js frontend.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## Tech Stack
+
+- Node.js
+- Express.js
+- TypeScript
+- MongoDB (Mongoose)
+- JWT Authentication
+- Rate Limiting
+
+---
+
+## Project Configuration
+
+All environment-specific and sensitive configuration is isolated inside the `config/` folder.
+
+### `config/` folder contains:
+
+- `db.ts` – MongoDB connection setup using Mongoose
+- `.env` – Environment variable loading and validation
+
+---
+
+## Environment Variables
+
+Create the following file locally:
+
+### `config/.env`
+
+```env
+PORT=5001
+JWT_SECRET=super_secret_key
+JWT_EXPIRES_IN=7d
+FRONT_URL="http://localhost:3000"
+MONGO_URI='mongodb://127.0.0.1:27017/task_management_api'
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Database Setup
+- MongoDB is used as the database
+- Ensure MongoDB is running locally or provide a MongoDB Atlas connection string
+- Update MONGO_URI in config/.env accordingly
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Installation & Running Locally
+```
+npm install
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+# Task Management App (Frontend)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Repo_url - `https://github.com/WebDevProCM/task-management-api-fe`
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Frontend application for the Task Management system built with **Next.js (App Router)**.  
+It communicates with a separate Express-based backend API.
+
+---
+
+## Tech Stack
+
+- Next.js (App Router)
+- React
+- TypeScript
+- Tailwind CSS
+
+---
+
+## Environment Configuration
+
+Frontend configuration is handled using environment variables.
+
+### Create `.env`
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:5001
+
+

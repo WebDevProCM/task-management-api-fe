@@ -18,6 +18,7 @@ export default function TaskDetailPage() {
   const token = getToken()
   const taskId = params.id as string
 
+  //redirect user to login page if token not found
   useEffect(() => {
     if (!token) {
       router.push('/login')
@@ -27,10 +28,16 @@ export default function TaskDetailPage() {
     loadTask()
   }, [taskId, token])
 
+  //fetching all task
   const loadTask = async () => {
     try {
       setLoading(true)
       const data = await fetchTask(token!, taskId)
+
+      if(!data.success){
+        return setError(data.message)
+      }
+
       setTask(data.data)
     } catch (err) {
       console.log("error: ", err)
@@ -40,13 +47,19 @@ export default function TaskDetailPage() {
     }
   }
 
+  //handling task update
   const handleUpdateTask = async (updates: Omit<Task, '_id' | 'createdAt' | 'updatedAt'>) => {
     if (!token) return
     
     try {
-      const updatedTask = await updateTask(token, updates, taskId)
-      setTask(updatedTask.data)
-      setEditing(false)
+      const updatedTask = await updateTask(token, updates, taskId);
+
+      if(!updatedTask.success){
+        return setError(updatedTask.message)
+      }
+
+      setTask(updatedTask.data);
+      setEditing(false);
     } catch (err) {
       console.log("error: ", err)
       setError('Failed to update task')
@@ -59,7 +72,7 @@ export default function TaskDetailPage() {
     if (!confirm('Are you sure you want to delete this task?')) return
     
     try {
-      await deleteTask(token,taskId)
+      await deleteTask(token,taskId);
       router.push('/')
     } catch (err) {
       console.log("error: ", err)
@@ -67,10 +80,12 @@ export default function TaskDetailPage() {
     }
   }
 
+  //loading ui
   if (loading) {
     return <div className="text-center py-8">Loading task...</div>
   }
 
+  //error showing ui
   if (error || !task) {
     return (
       <div className="text-center py-8 text-red-500">
@@ -99,6 +114,7 @@ export default function TaskDetailPage() {
         </div>
       </div>
 
+      {/* showing update task form */}
       {editing ? (
         <TaskForm
           initialData={task}

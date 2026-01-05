@@ -1,5 +1,4 @@
 import { User } from "@/types/auth";
-import { Task, UpdateTask } from "@/types/task";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 

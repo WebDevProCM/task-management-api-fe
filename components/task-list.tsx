@@ -17,8 +17,10 @@ export default function TaskList({ initialTasks = [] }: TaskListProps) {
   const [showForm, setShowForm] = useState(false)
   const [page, setPage] = useState(1)
 
+  //getting token
   const token = getToken()
 
+  //loading tasks fn
   const loadTasks = async () => {
     if (!token) return
     
@@ -36,6 +38,7 @@ export default function TaskList({ initialTasks = [] }: TaskListProps) {
     }
   }
 
+  //handling pagination
   useEffect(() => {
     loadTasks()
   }, [page])

@@ -1,4 +1,4 @@
-import { Task, UpdateTask } from "@/types/task";
+import { Task } from "@/types/task";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
