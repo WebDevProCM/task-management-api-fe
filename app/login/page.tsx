@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { setToken } from '@/lib/auth'
+import { loginUser } from '@/services/user'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -12,6 +14,23 @@ export default function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setLoading(true)
+    setError('')
+
+    try {
+      const { token, success, message } = await loginUser({email:formData.email, password:formData.password})
+      if(!success){
+        return setError(message)
+      }
+      setToken(token)
+      router.push('/')
+      router.refresh()
+    } catch (err) {
+      console.log("error: ", err)
+      setError('Login failed')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (

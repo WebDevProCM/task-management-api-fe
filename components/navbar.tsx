@@ -1,10 +1,23 @@
+'use client'
+
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { isAuthenticated, removeToken } from '@/lib/auth'
 
 export default function Navbar() {
-    const authenticated = false;
+  const router = useRouter()
+  const authenticated = isAuthenticated()
 
-    const handleLogout = async () => {
+  const handleLogout = async () => {
+    try {
+      await removeToken()
+    } catch (error) {
+      console.error('Logout error:', error)
+    } finally {
+      router.push('/login')
+      router.refresh()
     }
+  }
 
   return (
     <nav className="bg-black shadow-lg">
@@ -17,7 +30,7 @@ export default function Navbar() {
           <div className="flex items-center space-x-4">
             {authenticated ? (
               <>
-                <Link href="/" className="text-gray-700 hover:text-primary">
+                <Link href="/" className="text-gray-200 hover:text-primary">
                   Tasks
                 </Link>
                 <button
